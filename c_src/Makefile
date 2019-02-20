@@ -9,6 +9,10 @@ ERTS_INCLUDE_DIR ?= $(shell erl -noshell -s init stop -eval "io:format(\"~ts/ert
 ERL_INTERFACE_INCLUDE_DIR ?= $(shell erl -noshell -s init stop -eval "io:format(\"~ts\", [code:lib_dir(erl_interface, include)]).")
 ERL_INTERFACE_LIB_DIR ?= $(shell erl -noshell -s init stop -eval "io:format(\"~ts\", [code:lib_dir(erl_interface, lib)]).")
 
+$(info $$ERTS_INCLUDE_DIR is [${ERTS_INCLUDE_DIR}])
+$(info $$ERL_INTERFACE_INCLUDE_DIR is [${ERL_INTERFACE_INCLUDE_DIR}])
+$(info $$ERL_INTERFACE_LIB_DIR is [${ERL_INTERFACE_LIB_DIR}])
+
 C_SRC_DIR = $(CURDIR)
 C_SRC_OUTPUT ?= $(CURDIR)/../priv/$(PROJECT).so
 
