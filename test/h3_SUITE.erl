@@ -13,12 +13,14 @@
          h3_to_geo_boundary_test/1,
          hex_area_km2_decreasing_test/1,
          self_not_a_neighbor_test/1,
+         h3_edge_test/1,
          h3_of_geo_coord_test/1,
          k_ring_origin_index_test/1,
          k_ring_distance_origin_test/1,
          k_ring_distance_test/1,
          compact_roundtrip_test/1,
-         parent_test/1
+         parent_test/1,
+         grid_distance_test/1
         ]).
 
 all() ->
@@ -30,12 +32,14 @@ all() ->
      h3_to_geo_constrain_test,
      hex_area_km2_decreasing_test,
      self_not_a_neighbor_test,
+     h3_edge_test,
      h3_of_geo_coord_test,
      k_ring_origin_index_test,
      k_ring_distance_origin_test,
      k_ring_distance_test,
      compact_roundtrip_test,
-     parent_test
+     parent_test,
+     grid_distance_test
     ].
 
 init_per_testcase(_, Config) ->
@@ -106,6 +110,13 @@ self_not_a_neighbor_test(_Config) ->
     false = h3:indices_are_neighbors(SFH3, SFH3),
     ok.
 
+
+h3_edge_test(Config) ->
+    ParisIndex = proplists:get_value(paris_index, Config), 
+    NorthParisIndex = h3:from_geo({37.3715593, -122.0553238}, 7),
+    1401326775769759743 = h3:h3_edge(ParisIndex, NorthParisIndex),
+    ok.
+
 h3_of_geo_coord_test(_Config) ->
     Paris = h3:from_geo({48.8566, 2.3522}, 9),
     "891fb466257ffff" = h3:to_string(Paris),
@@ -167,4 +178,14 @@ parent_test(Config) ->
     ?assertError(badarg, h3:parent(SunnyvaleIndex, Resolution+1)),
     [ ?assertNotException(error, badarg, h3:parent(SunnyvaleIndex, R)) || R <- Resolutions, R =< Resolution ],
     [ ?assertError(badarg, h3:parent(SunnyvaleIndex, R)) || R <- Resolutions, R > Resolution ],
+    ok.
+
+grid_distance_test(_Config) ->
+    WhiteHouse = h3:from_geo({38.898030, -77.036558}, 8),
+    CapitolOneArena = h3:from_geo({38.898663, -77.020803}, 8),
+    %% This distance is ~1 mile, which is grid distance = 2 at resolution = 8
+    ct:pal("WhiteHouse: ~p, CapitolOneArena: ~p", [WhiteHouse, CapitolOneArena]),
+    Distance = h3:grid_distance(WhiteHouse, CapitolOneArena),
+    ct:pal("Distance: ~p", [Distance]),
+    ?assertEqual(2, Distance),
     ok.
